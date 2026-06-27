@@ -7,6 +7,15 @@ const { sequelize } = require('./config/database');
 // Load environment variables
 dotenv.config();
 
+// Verify critical environment variables
+if (!process.env.JWT_SECRET) {
+  console.error('❌ CRITICAL: JWT_SECRET is not defined in environment variables!');
+  console.error('Please check your .env file');
+  process.exit(1);
+}
+
+console.log('✅ JWT_SECRET configured');
+
 // Initialize Express app
 const app = express();
 
@@ -18,17 +27,26 @@ app.use(express.urlencoded({ extended: true }));
 // Database connections
 const connectDatabases = async () => {
   try {
-    // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ MongoDB connected successfully');
-
-    // Connect to PostgreSQL
+    // Connect to PostgreSQL/SQLite (required - handles users and orders)
     await sequelize.authenticate();
     await sequelize.sync({ alter: true });
-    console.log('✅ PostgreSQL connected successfully');
+    console.log('✅ PostgreSQL/SQLite connected successfully');
   } catch (error) {
-    console.error('❌ Database connection error:', error);
+    console.error('❌ PostgreSQL/SQLite connection error:', error);
     process.exit(1);
+  }
+
+  try {
+    // Connect to MongoDB (optional - handles products)
+    if (process.env.MONGODB_URI) {
+      await mongoose.connect(process.env.MONGODB_URI);
+      console.log('✅ MongoDB connected successfully');
+    } else {
+      console.log('⚠️ MONGODB_URI not set, skipping MongoDB connection');
+    }
+  } catch (error) {
+    console.warn('⚠️ MongoDB connection failed (products may not load):', error.message);
+    console.warn('   Server will continue without MongoDB. Set MONGODB_URI in .env to enable.');
   }
 };
 
@@ -46,6 +64,17 @@ app.use('/api/recommendations', require('./routes/recommendations'));
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Amazon Clone API is running' });
+});
+
+// Test auth endpoint
+const { auth } = require('./middleware/auth');
+app.get('/api/test-auth', auth, (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Authentication working',
+    user: req.user,
+    jwtConfigured: !!process.env.JWT_SECRET
+  });
 });
 
 // Error handling middleware

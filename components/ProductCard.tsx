@@ -3,6 +3,7 @@ import { FiStar } from 'react-icons/fi';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '@/lib/slices/cartSlice';
 import toast from 'react-hot-toast';
+import { formatINR } from '@/lib/currency';
 
 interface Product {
   _id: string;
@@ -40,7 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     : product.price;
 
   return (
-    <Link href={`/product/${product._id}`}>
+    <Link href={`/products/${product._id}`}>
       <div className="bg-white rounded-lg shadow hover:shadow-xl transition-shadow p-4 cursor-pointer h-full flex flex-col">
         {/* Product Image */}
         <div className="relative h-48 mb-4">
@@ -84,11 +85,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Price */}
           <div className="mb-3">
             <span className="text-2xl font-bold text-red-600">
-              ${finalPrice.toFixed(2)}
+              {formatINR(finalPrice)}
             </span>
             {product.discount != null && product.discount > 0 && (
               <span className="text-sm text-gray-500 line-through ml-2">
-                ${product.price.toFixed(2)}
+                {formatINR(product.price)}
               </span>
             )}
           </div>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 interface SidebarProps {
@@ -19,7 +18,6 @@ export interface FilterState {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
-  const router = useRouter();
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({
     departments: true,
     brands: true,

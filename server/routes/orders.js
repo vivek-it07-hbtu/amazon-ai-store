@@ -6,6 +6,7 @@ const { auth } = require('../middleware/auth');
 // Create new order
 router.post('/', auth, async (req, res) => {
   try {
+    console.log('📦 Creating order for user:', req.user);
     const { items, shippingAddress, paymentMethod, itemsPrice, shippingPrice, taxPrice, totalPrice } = req.body;
 
     // Generate order number
@@ -26,12 +27,14 @@ router.post('/', auth, async (req, res) => {
       orderStatus: 'processing',
     });
 
+    console.log('✅ Order created successfully:', orderNumber);
     res.status(201).json({
       success: true,
       message: 'Order placed successfully',
       order,
     });
   } catch (error) {
+    console.error('❌ Order creation error:', error);
     res.status(500).json({
       success: false,
       message: error.message,

@@ -15,6 +15,7 @@ interface Product {
   images: { url: string; alt: string }[];
   ratings: { average: number; count: number };
   category: string;
+  discount?: number;
 }
 
 export default function Home() {

@@ -8,6 +8,7 @@ import axios from 'axios';
 import { clearCart } from '@/lib/slices/cartSlice';
 import toast from 'react-hot-toast';
 import { FiTruck, FiCreditCard, FiMapPin } from 'react-icons/fi';
+import { formatINR } from '@/lib/currency';
 
 export default function Checkout() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function Checkout() {
   const { items } = useSelector((state: RootState) => state.cart);
 
   const [shippingInfo, setShippingInfo] = useState({
-    fullName: user?.firstName + ' ' + user?.lastName || '',
+    fullName: user ? `${user.firstName} ${user.lastName}` : '',
     street: '',
     city: '',
     state: '',
@@ -80,8 +81,9 @@ export default function Checkout() {
 
       dispatch(clearCart());
       toast.success('Order placed successfully!');
-      router.push(`/orders/${response.data.order._id}`);
+      router.push(`/orders/${response.data.order.id}`);
     } catch (error: any) {
+      console.error('Order error:', error);
       toast.error(error.response?.data?.message || 'Failed to place order');
     } finally {
       setLoading(false);
@@ -283,12 +285,12 @@ export default function Checkout() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Items ({items.length}):</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">{formatINR(subtotal)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Shipping:</span>
                     <span className="font-semibold">
-                      {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+                      {shipping === 0 ? 'FREE' : formatINR(shipping)}
                     </span>
                   </div>
                   {shipping === 0 && (
@@ -298,11 +300,11 @@ export default function Checkout() {
                   )}
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tax:</span>
-                    <span className="font-semibold">${tax.toFixed(2)}</span>
+                    <span className="font-semibold">{formatINR(tax)}</span>
                   </div>
                   <div className="border-t pt-3 flex justify-between text-lg">
                     <span className="font-bold">Order Total:</span>
-                    <span className="font-bold text-amazon-orange">${total.toFixed(2)}</span>
+                    <span className="font-bold text-amazon-orange">{formatINR(total)}</span>
                   </div>
                 </div>
 

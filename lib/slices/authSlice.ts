@@ -20,14 +20,32 @@ const initialState: AuthState = {
   isAuthenticated: false,
 };
 
-// Load from localStorage if available
+// Load from localStorage if available and validate token expiry
 if (typeof window !== 'undefined') {
   const token = localStorage.getItem('token');
   const user = localStorage.getItem('user');
   if (token && user) {
-    initialState.token = token;
-    initialState.user = JSON.parse(user);
-    initialState.isAuthenticated = true;
+    try {
+      // Decode the JWT payload (base64) to check expiry client-side
+      const payloadBase64 = token.split('.')[1];
+      if (payloadBase64) {
+        const payload = JSON.parse(atob(payloadBase64));
+        const isExpired = payload.exp && payload.exp * 1000 < Date.now();
+        if (!isExpired) {
+          initialState.token = token;
+          initialState.user = JSON.parse(user);
+          initialState.isAuthenticated = true;
+        } else {
+          // Token expired — clear it
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        }
+      }
+    } catch {
+      // Malformed token — clear it
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
   }
 }
 

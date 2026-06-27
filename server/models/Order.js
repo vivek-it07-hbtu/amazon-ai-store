@@ -40,7 +40,7 @@ const Order = sequelize.define(
       type: DataTypes.JSON,
     },
     paymentMethod: {
-      type: DataTypes.ENUM('card', 'paypal', 'cod'),
+      type: DataTypes.ENUM('card', 'paypal', 'cod', 'Credit Card'),
       allowNull: false,
     },
     paymentStatus: {

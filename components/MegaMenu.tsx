@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FiChevronRight, FiUser } from 'react-icons/fi';
@@ -109,9 +109,14 @@ interface MegaMenuProps {
 }
 
 export default function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
+  const [mounted, setMounted] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const router = useRouter();
   const { user } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleAccountClick = () => {
     onClose();
@@ -144,8 +149,8 @@ export default function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
               <FiUser className="text-xl" />
             </div>
             <div className="text-left">
-              <div className="text-white text-sm">Hello, {user?.firstName || 'Sign In'}</div>
-              <div className="text-white font-bold text-base">{user ? 'Your Account' : 'Sign In'}</div>
+              <div className="text-white text-sm">Hello, {mounted && user ? user.firstName : 'Sign In'}</div>
+              <div className="text-white font-bold text-base">{mounted && user ? 'Your Account' : 'Sign In'}</div>
             </div>
           </button>
           <button
@@ -264,7 +269,7 @@ export default function MegaMenu({ isOpen, onClose }: MegaMenuProps) {
           >
             Your Wish List
           </Link>
-          {!user && (
+          {mounted && !user && (
             <Link
               href="/login"
               onClick={onClose}

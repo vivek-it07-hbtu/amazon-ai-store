@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FiClock, FiTrendingUp, FiZap, FiEye, FiBarChart2 } from 'react-icons/fi';
+import { formatINR } from '@/lib/currency';
 
 interface DealBannerProps {
   title: string;
@@ -9,7 +10,7 @@ interface DealBannerProps {
     _id: string;
     name: string;
     price: number;
-    discount: number;
+    discount?: number;
     images: { url: string; alt: string }[];
     ratings?: { average: number; count: number };
   }>;
@@ -202,7 +203,9 @@ export default function DealBanner({ title, endTime, products }: DealBannerProps
       {/* AI-RANKED PRODUCTS GRID */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {rankedProducts.slice(0, 4).map((product) => {
-          const discountedPrice = product.price - (product.price * product.discount) / 100;
+          const discountedPrice = product.discount
+            ? product.price - (product.price * product.discount) / 100
+            : product.price;
           const analysis = product.aiAnalysis;
           
           return (
@@ -266,12 +269,8 @@ export default function DealBanner({ title, endTime, products }: DealBannerProps
 
                     {/* PRICES */}
                     <div className="mb-2">
-                      <div className="text-lg font-bold text-red-600">
-                        ${discountedPrice.toFixed(2)}
-                      </div>
-                      <div className="text-xs text-gray-500 line-through font-medium">
-                        ${product.price.toFixed(2)}
-                      </div>
+                      <p className="text-2xl font-bold text-red-600">{formatINR(discountedPrice)}</p>
+                      <p className="text-sm line-through text-gray-500">{formatINR(product.price)}</p>
                     </div>
 
                     {/* STOCK ALERT */}

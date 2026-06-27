@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/lib/slices/cartSlice';
 import { RootState } from '@/lib/store';
 import toast from 'react-hot-toast';
+import { formatINR } from '@/lib/currency';
 
 interface Product {
   _id: string;
@@ -233,17 +234,17 @@ export default function ProductDetail() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm text-red-600">-{product.discount}%</span>
                     <span className="text-3xl font-bold text-red-600">
-                      ${(product.price * (1 - product.discount / 100)).toFixed(2)}
+                      {formatINR(product.price * (1 - product.discount / 100))}
                     </span>
                   </div>
                   <div className="text-sm text-gray-600">
-                    List Price: <span className="line-through">${product.price.toFixed(2)}</span>
+                    List Price: <span className="line-through">{formatINR(product.price)}</span>
                   </div>
                 </>
               )}
               {(product.discount == null || product.discount === 0) && (
                 <span className="text-3xl font-bold">
-                  ${product.price.toFixed(2)}
+                    {formatINR(product.price)}
                 </span>
               )}
             </div>
@@ -266,8 +267,8 @@ export default function ProductDetail() {
             <div className="border rounded-lg p-4 sticky top-4">
               <div className="text-3xl font-bold mb-4">
                 {product.discount != null && product.discount > 0 
-                  ? `$${(product.price * (1 - product.discount / 100)).toFixed(2)}`
-                  : `$${product.price.toFixed(2)}`
+                  ? formatINR(product.price * (1 - product.discount / 100))
+                  : formatINR(product.price)
                 }
               </div>
 

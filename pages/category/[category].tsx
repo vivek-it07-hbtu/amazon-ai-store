@@ -5,7 +5,6 @@ import Layout from '@/components/Layout';
 import ProductCard from '@/components/ProductCard';
 import Sidebar, { FilterState } from '@/components/Sidebar';
 import axios from 'axios';
-import { FiFilter } from 'react-icons/fi';
 
 interface Product {
   _id: string;
@@ -14,6 +13,7 @@ interface Product {
   images: { url: string; alt: string }[];
   ratings: { average: number; count: number };
   category: string;
+  discount?: number;
 }
 
 export default function CategoryPage() {
@@ -86,8 +86,8 @@ export default function CategoryPage() {
       }
       
       if (filters.discount > 0) {
-        filteredProducts = filteredProducts.filter((p: Product) => 
-          p.price < (p.price * (1 - filters.discount / 100))
+        filteredProducts = filteredProducts.filter((p: any) => 
+          (p.discount || 0) >= filters.discount
         );
       }
       

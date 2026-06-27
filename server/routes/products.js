@@ -62,6 +62,25 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get featured products (MUST be before /:id to avoid "featured" being treated as an ID)
+router.get('/featured/list', async (req, res) => {
+  try {
+    const products = await Product.find({ isFeatured: true, isActive: true })
+      .limit(10)
+      .sort('-ratings.average');
+
+    res.json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 // Get product by ID
 router.get('/:id', async (req, res) => {
   try {
@@ -77,25 +96,6 @@ router.get('/:id', async (req, res) => {
     res.json({
       success: true,
       product,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-});
-
-// Get featured products
-router.get('/featured/list', async (req, res) => {
-  try {
-    const products = await Product.find({ isFeatured: true, isActive: true })
-      .limit(10)
-      .sort('-ratings.average');
-
-    res.json({
-      success: true,
-      products,
     });
   } catch (error) {
     res.status(500).json({

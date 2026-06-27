@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import Head from 'next/head';
 import Layout from '@/components/Layout';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { FiTrash2, FiMinus, FiPlus } from 'react-icons/fi';
 import { useRouter } from 'next/router';
+import { formatINR } from '@/lib/currency';
 
 export default function Cart() {
   const dispatch = useDispatch();
@@ -74,7 +74,7 @@ export default function Cart() {
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold mb-2">{item.name}</h3>
                     <p className="text-2xl font-bold text-amazon-orange mb-4">
-                      ${item.price.toFixed(2)}
+                      {formatINR(item.price)}
                     </p>
 
                     <div className="flex items-center gap-4">
@@ -105,7 +105,7 @@ export default function Cart() {
 
                   <div className="text-right">
                     <p className="text-xl font-bold">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      {formatINR(item.price * item.quantity)}
                     </p>
                   </div>
                 </div>
@@ -120,15 +120,15 @@ export default function Cart() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal ({items.length} items)</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">{formatINR(subtotal)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Estimated Tax</span>
-                    <span className="font-semibold">${tax.toFixed(2)}</span>
+                    <span className="font-semibold">{formatINR(tax)}</span>
                   </div>
                   <div className="border-t pt-3 flex justify-between text-lg">
                     <span className="font-bold">Total</span>
-                    <span className="font-bold text-amazon-orange">${total.toFixed(2)}</span>
+                    <span className="font-bold text-amazon-orange">{formatINR(total)}</span>
                   </div>
                 </div>
 

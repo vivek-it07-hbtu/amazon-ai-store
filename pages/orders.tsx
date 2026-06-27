@@ -6,13 +6,15 @@ import { RootState } from '@/lib/store';
 import axios from 'axios';
 import Link from 'next/link';
 import { FiPackage, FiClock, FiCheck, FiX } from 'react-icons/fi';
+import { formatINR } from '@/lib/currency';
 
 interface Order {
-  _id: string;
+  id: string;
+  _id?: string;
   orderNumber: string;
   createdAt: string;
-  total: number;
-  status: string;
+  totalAmount: number;
+  orderStatus: string;
   items: {
     productId: string;
     name: string;
@@ -128,7 +130,7 @@ export default function Orders() {
         ) : (
           <div className="space-y-6">
             {orders.map((order) => (
-              <div key={order._id} className="bg-white rounded-lg shadow overflow-hidden">
+              <div key={order.id || order._id} className="bg-white rounded-lg shadow overflow-hidden">
                 {/* Order Header */}
                 <div className="bg-gray-50 px-6 py-4 border-b grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
@@ -139,7 +141,7 @@ export default function Orders() {
                   </div>
                   <div>
                     <p className="text-xs text-gray-600">TOTAL</p>
-                    <p className="font-semibold">${order.total.toFixed(2)}</p>
+                    <p className="font-semibold">{formatINR(order.totalAmount || 0)}</p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-600">SHIP TO</p>
@@ -148,7 +150,7 @@ export default function Orders() {
                   <div>
                     <p className="text-xs text-gray-600">ORDER # {order.orderNumber}</p>
                     <Link
-                      href={`/orders/${order._id}`}
+                      href={`/orders/${order.id || order._id}`}
                       className="text-amazon-blue hover:underline"
                     >
                       View order details
@@ -159,13 +161,13 @@ export default function Orders() {
                 {/* Order Items */}
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    {getStatusIcon(order.status)}
+                    {getStatusIcon(order.orderStatus)}
                     <span
                       className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
-                        order.status
+                        order.orderStatus
                       )}`}
                     >
-                      {order.status}
+                      {order.orderStatus}
                     </span>
                   </div>
 
@@ -174,17 +176,17 @@ export default function Orders() {
                       <div key={index} className="flex justify-between items-start">
                         <div>
                           <p className="font-semibold">{item.name}</p>
-                          <p className="text-gray-600 text-sm">Quantity: {item.quantity}</p>
+                          <p className="text-sm text-gray-600">{formatINR(item.price)} × {item.quantity}</p>
                         </div>
-                        <p className="font-semibold">${item.price.toFixed(2)}</p>
+                        <p className="font-semibold">{formatINR(item.price * item.quantity)}</p>
                       </div>
                     ))}
                   </div>
 
-                  {order.status.toLowerCase() === 'delivered' && (
+                  {order.orderStatus?.toLowerCase() === 'delivered' && (
                     <div className="mt-4 pt-4 border-t">
                       <Link
-                        href={`/orders/${order._id}/review`}
+                        href={`/orders/${order.id || order._id}/review`}
                         className="text-amazon-blue hover:underline"
                       >
                         Write a product review

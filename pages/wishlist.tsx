@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/store';
 import axios from 'axios';
 import { FiHeart, FiShoppingCart, FiTrash2 } from 'react-icons/fi';
+import { formatINR } from '@/lib/currency';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -136,8 +137,8 @@ export default function Wishlist() {
                     </h3>
                   </Link>
 
-                  <p className="text-2xl font-bold text-amazon-orange mb-4">
-                    ${item.productId.price.toFixed(2)}
+                  <p className="text-xl font-bold text-amazon-orange mb-4">
+                    {formatINR(item.productId.price)}
                   </p>
 
                   {item.productId.stock > 0 ? (
