@@ -14,14 +14,23 @@ router.get('/', async (req, res) => {
       maxPrice,
       search,
       sort = '-createdAt',
-      rating,
+      minRating,
+      brands,
     } = req.query;
 
     // Build query
     const query = { isActive: true };
 
     if (category) {
-      query.category = category;
+      if (category.includes(',')) {
+        query.category = { $in: category.split(',') };
+      } else {
+        query.category = category;
+      }
+    }
+    
+    if (brands) {
+      query.brand = { $in: brands.split(',') };
     }
 
     if (minPrice || maxPrice) {
@@ -34,8 +43,8 @@ router.get('/', async (req, res) => {
       query.$text = { $search: search };
     }
 
-    if (rating) {
-      query['ratings.average'] = { $gte: Number(rating) };
+    if (minRating) {
+      query['ratings.average'] = { $gte: Number(minRating) };
     }
 
     // Execute query with pagination
